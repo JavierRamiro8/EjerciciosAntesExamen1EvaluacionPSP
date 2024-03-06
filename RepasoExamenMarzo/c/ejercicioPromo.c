@@ -6,6 +6,8 @@
 #include <sys/wait.h>
 #include <time.h>
 
+int acierto = 0;
+
 void manejadorSIGUSR1(int signal)
 {
     printf("Es mas grande el numero\n");
@@ -19,6 +21,13 @@ void manejadorSIGUSR2(int signal)
 void manejadorSIGINT(int signal)
 {
     printf("Acertaste!!\n");
+    fflush(stdout);
+}
+
+void manejadorAcierto(int signal)
+{
+    printf("El padre ha adivinado el número antes de agotar los intentos\n");
+    acierto = 1;
 }
 
 int main(int argc, char const *argv[])
@@ -26,27 +35,28 @@ int main(int argc, char const *argv[])
     signal(SIGUSR1, manejadorSIGUSR1);
     signal(SIGUSR2, manejadorSIGUSR2);
     signal(SIGINT, manejadorSIGINT);
+    signal(SIGIO, manejadorAcierto);
 
     pid_t hijo;
     int pipePadreHijo[2];
     int contador = 7;
-    int hijoTerminado = 0;
 
     if (pipe(pipePadreHijo) != 0)
     {
         perror("pipe");
         return 1;
     }
+
     hijo = fork();
 
-    srand(time(NULL));
     if (hijo == 0)
     {
-        // Cierra el extremo de escritura de la tubería en el proceso hijo
+        srand(time(NULL));
         int numeroAleatorio = 77;
         close(pipePadreHijo[1]);
 
         int numeroRecibido = 0;
+
         while (contador > 0)
         {
             read(pipePadreHijo[0], &numeroRecibido, sizeof(numeroRecibido));
@@ -61,11 +71,12 @@ int main(int argc, char const *argv[])
             else
             {
                 kill(getppid(), SIGINT);
+                kill(getppid(), SIGIO);
                 exit(0);
             }
             contador--;
         }
-        
+
         close(pipePadreHijo[0]);
         exit(0);
     }
@@ -73,14 +84,24 @@ int main(int argc, char const *argv[])
     {
         close(pipePadreHijo[0]);
         int numeroAElegir = 0;
-        while (contador > 0)
+
+        while (contador > 0 && !acierto)
         {
             printf("Escriba un número, tiene %d intentos: ", contador);
             scanf("%d", &numeroAElegir);
             write(pipePadreHijo[1], &numeroAElegir, sizeof(int));
-            pause();
+
+            // Agregar un pequeño retardo para permitir que se manejen las señales
+            usleep(100); // 100ms
+
             contador--;
         }
+
+        if (!acierto)
+        {
+            printf("Se han agotado los intentos sin adivinar el número\n");
+        }
+
         waitpid(hijo, NULL, 0);
     }
 
