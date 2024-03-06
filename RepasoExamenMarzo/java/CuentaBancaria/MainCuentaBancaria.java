@@ -1,4 +1,4 @@
-package RepasoExamenMarzo.java;
+package RepasoExamenMarzo.java.CuentaBancaria;
 
 public class MainCuentaBancaria {
     private static final int CANTIDADRETIRADA=50;
