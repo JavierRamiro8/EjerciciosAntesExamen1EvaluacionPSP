@@ -14,12 +14,13 @@ public class MainCarrera {
         synchronized (lock) {
             for (int i = 0; i < hilo.length; i++) {
                 hilo[i].start();
-                try {
-                    lock.wait();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+
             }
+        }
+        try {
+            lock.wait();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
         lock.notifyAll();
 
