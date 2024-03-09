@@ -21,13 +21,7 @@ void manejadorSIGUSR2(int signal)
 void manejadorSIGINT(int signal)
 {
     printf("Acertaste!!\n");
-    fflush(stdout);
-}
-
-void manejadorAcierto(int signal)
-{
-    printf("El padre ha adivinado el número antes de agotar los intentos\n");
-    acierto = 1;
+    acierto=1;
 }
 
 int main(int argc, char const *argv[])
@@ -35,7 +29,6 @@ int main(int argc, char const *argv[])
     signal(SIGUSR1, manejadorSIGUSR1);
     signal(SIGUSR2, manejadorSIGUSR2);
     signal(SIGINT, manejadorSIGINT);
-    signal(SIGIO, manejadorAcierto);
 
     pid_t hijo;
     int pipePadreHijo[2];
@@ -71,7 +64,6 @@ int main(int argc, char const *argv[])
             else
             {
                 kill(getppid(), SIGINT);
-                kill(getppid(), SIGIO);
                 exit(0);
             }
             contador--;
@@ -91,8 +83,7 @@ int main(int argc, char const *argv[])
             scanf("%d", &numeroAElegir);
             write(pipePadreHijo[1], &numeroAElegir, sizeof(int));
 
-            // Agregar un pequeño retardo para permitir que se manejen las señales
-            usleep(100); // 100ms
+            pause();
 
             contador--;
         }

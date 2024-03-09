@@ -3,8 +3,8 @@ package RepasoExamenMarzo.java.Carreras;
 public class Carrera implements Runnable {
     private static final long TIEMPO_DESCANSO = 500;
     private static final double INTERVALO_KM = 10;
-    int kmRecorridos=0;
-    int kmTotales=100;
+    private int kmRecorridos=0;
+    private int kmTotales=100;
 
     int dorsal;
     
@@ -14,6 +14,13 @@ public class Carrera implements Runnable {
 
     @Override
     public void run() {
+        synchronized(MainCarrera.lock){
+            try {
+                MainCarrera.lock.wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         System.out.println(String.format("Soy el dorsal %d, inicio mi carrera", dorsal));
 
         while (kmRecorridos < kmTotales) {

@@ -1,7 +1,7 @@
 package RepasoExamenMarzo.java.Carreras;
 
 public class MainCarrera {
-    private static Object lock = new Object();
+    public static Object lock = new Object();
 
     public static void main(String[] args) {
         Thread[] hilo = new Thread[20];
@@ -11,19 +11,14 @@ public class MainCarrera {
             corredor[i] = new Carrera(dorsal);
             hilo[i] = new Thread(corredor[i]);
         }
+        for (int i = 0; i < hilo.length; i++) {
+            hilo[i].start();
+        }
         synchronized (lock) {
-            for (int i = 0; i < hilo.length; i++) {
-                hilo[i].start();
-
-            }
+            lock.notifyAll();
         }
-        try {
-            lock.wait();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        lock.notifyAll();
 
+        
         for (int i = 0; i < hilo.length; i++) {
             try {
                 hilo[i].join();
