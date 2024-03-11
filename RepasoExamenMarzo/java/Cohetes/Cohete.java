@@ -6,7 +6,9 @@ public class Cohete implements Runnable {
     private final int TIEMPODORMIDOMAX = 1000;
     private final int TIEMPODORMIDOMIN = 500;
     private static int cohetesExplotados = 0;
-    private final double EXPLOSION = 0.10;
+    private final int EXPLOSION = 1;
+    private final int MAXRANDNUM = 10;
+    
     private int explotado;
 
     @Override
@@ -41,7 +43,7 @@ public class Cohete implements Runnable {
     }
 
     private synchronized void explosion() {
-        double probabilidadExplosion = Math.random();
+        int probabilidadExplosion = (int)(Math.random()*MAXRANDNUM+1);
         if (probabilidadExplosion == EXPLOSION) {
             cohetesExplotados++;
             System.out.println("El hilo " + Thread.currentThread().getId() + " ha explotado");
@@ -55,7 +57,7 @@ public class Cohete implements Runnable {
             System.out.println("La mision a sido un exito");
             return true;
         } else {
-            System.out.println("La mision ha sido un fracaso total");
+            System.out.println("La mision ha sido un fracaso total, han explotado: "+cohetesExplotados);
             return false;
         }
     }
