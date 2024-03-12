@@ -40,18 +40,18 @@ void manejador(int signal)
 
 int main(int argc, char const *argv[])
 {
-    /*if (argc != 2)
+    if (argc != 2)
     {
         printf("argumento invalido");
         return 1;
-    }*/
+    }
     srand(time(NULL));
     pid_t hijo1;
     pid_t hijo2;
     signal(SIGUSR1, manejador);
     signal(SIGUSR2, manejador);
 
-    int numeroRecibido = 3;
+    int numeroRecibido = atoi(argv[1]);
     int pipeHijo1Padre[2];
     int pipeHijo2Padre[2];
     if (pipe(pipeHijo1Padre) != 0)
