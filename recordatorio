@@ -1,0 +1,3 @@
+en c:
+signal antes de los forks, en las primeras lineas.
+0 en un if salta a la parte del else y 1 a la del if, 0 negativo 1 afirmativo, si son cadenas, 0 verdadero 1 falso.
